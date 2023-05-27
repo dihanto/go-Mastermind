@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -63,7 +62,6 @@ func (controller *CartControllerImpl) GetCart(writer http.ResponseWriter, reques
 		Status: "OK",
 		Data:   cartResponse,
 	}
-	log.Println(cartResponse)
 
 	writer.Header().Add("Content-Type", "application/json")
 	err := json.NewEncoder(writer).Encode(webResponse)
