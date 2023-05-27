@@ -1,0 +1,178 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Carts RESTful API",
+        "description": "API spec for Carts RESTful API",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api"
+        }
+    ],
+    "paths": {
+        "/products/{productId}": {
+            "get": {
+                "tags": [
+                    "Products API"
+                ],
+                "summary": "Get product by ID",
+                "description": "Get product by id",
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path",
+                        "description": "Product ID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success get product",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "number"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "number"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "price": {
+                                                    "type": "number"
+                                                },
+                                                "quantity": {
+                                                    "type": "number"
+                                                },
+                                                "categoryId": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/carts": {
+            "post": {
+                "tags": [
+                    "Carts API"
+                ],
+                "description": "Add to Cart",
+                "summary": "Add to Cart",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "productId": {
+                                        "type": "number"
+                                    },
+                                    "quantity": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success add to Cart",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "number"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "number"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "price": {
+                                                    "type": "number"
+                                                },
+                                                "quantity": {
+                                                    "type": "number"
+                                                },
+                                                "categoryId": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Carts API"
+                ],
+                "summary": "Get carts",
+                "description": "Get carts",
+                "responses": {
+                    "200": {
+                        "description": "Success get Cart",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "number"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "number"
+                                                },
+                                                "productId": {
+                                                    "type": "number"
+                                                },
+                                                "quantity": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
