@@ -14,6 +14,7 @@ type Category struct {
 }
 
 type Cart struct {
+	Id        int
 	ProductId int
 	Quantity  int
 }
