@@ -155,7 +155,7 @@
                                         "data": {
                                             "type": "object",
                                             "properties": {
-                                                "id": {
+                                                "cartId": {
                                                     "type": "number"
                                                 },
                                                 "productId": {
@@ -172,6 +172,70 @@
                         }
                     }
                 }
+            }
+        },
+        "/carts/product": {
+            "patch": {
+                "tags": [
+                    "Carts API"
+                ],
+                "description": "Update Cart",
+                "summary": "Update Cart",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "cartId":{
+                                        "type" : "number"
+                                    },
+                                    "productId": {
+                                        "type": "number"
+                                    },
+                                    "quantity": {
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success update Cart",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "number"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "cartId": {
+                                                    "type": "number"
+                                                },
+                                                "productId": {
+                                                    "type": "number"
+                                                },
+                                                "quantity": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                            
             }
         }
     }
