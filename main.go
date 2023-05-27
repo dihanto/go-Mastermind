@@ -7,6 +7,7 @@ import (
 	"github.com/dihanto/go-mastermind/app"
 	"github.com/dihanto/go-mastermind/controller"
 	"github.com/dihanto/go-mastermind/helper"
+	"github.com/dihanto/go-mastermind/middleware"
 	"github.com/dihanto/go-mastermind/repository"
 	"github.com/dihanto/go-mastermind/service"
 	_ "github.com/go-sql-driver/mysql"
@@ -21,7 +22,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    "localhost:8000",
-		Handler: router,
+		Handler: middleware.NewCartMiddleware(router),
 	}
 	fmt.Println("server running")
 	err := server.ListenAndServe()
