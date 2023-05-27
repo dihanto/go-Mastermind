@@ -32,7 +32,7 @@ func (service *CartServiceImpl) FindProductById(ctx context.Context, productId i
 
 	return helper.ToProductResponse(product)
 }
-func (service *CartServiceImpl) AddToCart(ctx context.Context, request web.CartAddRequest) web.CartResponse {
+func (service *CartServiceImpl) AddToCart(ctx context.Context, request web.CartAddOrUpdateRequest) web.CartResponse {
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
@@ -57,4 +57,18 @@ func (service *CartServiceImpl) GetCart(ctx context.Context) []web.CartResponse 
 
 	return helper.ToCartResponses(carts)
 
+}
+
+func (service *CartServiceImpl) UpdateCart(ctx context.Context, request web.CartUpdateRequest) {
+	tx, err := service.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	cart := domain.Cart{
+		Id:        request.Id,
+		ProductId: request.ProductId,
+		Quantity:  request.Quantity,
+	}
+
+	service.CartRepository.UpdateCart(ctx, tx, cart)
 }

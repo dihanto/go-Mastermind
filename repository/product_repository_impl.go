@@ -60,3 +60,9 @@ func (repository *CartRepositoryImpl) GetCart(ctx context.Context, tx *sql.Tx) (
 	return carts, err
 
 }
+
+func (repository *CartRepositoryImpl) UpdateCart(ctx context.Context, tx *sql.Tx, cart domain.Cart) {
+	script := "update carts set product_id=?,quantity=? where id=?"
+	_, err := tx.ExecContext(ctx, script, cart.ProductId, cart.Quantity, cart.Id)
+	helper.PanicIfError(err)
+}
