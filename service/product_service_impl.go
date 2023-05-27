@@ -54,7 +54,6 @@ func (service *CartServiceImpl) GetCart(ctx context.Context) []web.CartResponse 
 
 	carts, err := service.CartRepository.GetCart(ctx, tx)
 	helper.PanicIfError(err)
-
 	return helper.ToCartResponses(carts)
 
 }

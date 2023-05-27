@@ -62,7 +62,17 @@ func (repository *CartRepositoryImpl) GetCart(ctx context.Context, tx *sql.Tx) (
 }
 
 func (repository *CartRepositoryImpl) UpdateCart(ctx context.Context, tx *sql.Tx, cart domain.Cart) {
-	script := "update carts set product_id=?,quantity=? where id=?"
-	_, err := tx.ExecContext(ctx, script, cart.ProductId, cart.Quantity, cart.Id)
-	helper.PanicIfError(err)
+	if cart.ProductId != 0 && cart.Quantity == 0 {
+		script := "update carts set product_id=? where id=?"
+		_, err := tx.ExecContext(ctx, script, cart.ProductId, cart.Id)
+		helper.PanicIfError(err)
+	} else if cart.ProductId == 0 && cart.Quantity != 0 {
+		script := "update carts set quantity=? where id=?"
+		_, err := tx.ExecContext(ctx, script, cart.Quantity, cart.Id)
+		helper.PanicIfError(err)
+	} else {
+		script := "update carts set product_id=?,quantity=? where id=?"
+		_, err := tx.ExecContext(ctx, script, cart.ProductId, cart.Quantity, cart.Id)
+		helper.PanicIfError(err)
+	}
 }

@@ -62,7 +62,6 @@ func (controller *CartControllerImpl) GetCart(writer http.ResponseWriter, reques
 		Status: "OK",
 		Data:   cartResponse,
 	}
-
 	writer.Header().Add("Content-Type", "application/json")
 	err := json.NewEncoder(writer).Encode(webResponse)
 	helper.PanicIfError(err)
@@ -73,13 +72,8 @@ func (controller *CartControllerImpl) UpdateCart(writer http.ResponseWriter, req
 	id, err := strconv.Atoi(Id)
 	helper.PanicIfError(err)
 
-	productIdString := param.ByName("productId")
-	productId, err := strconv.Atoi(productIdString)
-	helper.PanicIfError(err)
-
 	cartRequest := web.CartUpdateRequest{
-		Id:        id,
-		ProductId: productId,
+		Id: id,
 	}
 	err = json.NewDecoder(request.Body).Decode(&cartRequest)
 	helper.PanicIfError(err)
