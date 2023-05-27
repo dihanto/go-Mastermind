@@ -17,13 +17,13 @@ func NewCartRepository() CartRepository {
 }
 
 func (repository *CartRepositoryImpl) FindProductById(ctx context.Context, tx *sql.Tx, productId int) (product domain.Product, err error) {
-	script := "Select name, price, quantity, category_id from products where id = ?"
+	script := "Select name, price, category_id from products where product_id = ?"
 	rows, err := tx.QueryContext(ctx, script, productId)
 	helper.PanicIfError(err)
 	defer rows.Close()
 
 	if rows.Next() {
-		err = rows.Scan(&product.Name, &product.Price, &product.Quantity, &product.CategoryId)
+		err = rows.Scan(&product.Name, &product.Price, &product.CategoryId)
 		helper.PanicIfError(err)
 		return product, nil
 	} else {
@@ -32,47 +32,49 @@ func (repository *CartRepositoryImpl) FindProductById(ctx context.Context, tx *s
 
 }
 
-func (repository *CartRepositoryImpl) AddToCart(ctx context.Context, tx *sql.Tx, cart domain.Cart) domain.Cart {
-	script := "insert into carts (product_id, quantity) values (?,?)"
-	result, err := tx.ExecContext(ctx, script, cart.ProductId, cart.Quantity)
+func (repository *CartRepositoryImpl) AddToCart(ctx context.Context, tx *sql.Tx, cartItem domain.CartItem) domain.CartItem {
+
+	script := "insert into cart_items (cart_id, product_id, quantity) values (?,?,?)"
+	result, err := tx.ExecContext(ctx, script, cartItem.CartId, cartItem.ProductId, cartItem.Quantity)
 	helper.PanicIfError(err)
 
 	id, err := result.LastInsertId()
 	helper.PanicIfError(err)
 
-	cart.Id = int(id)
-	return cart
+	cartItem.CartItemId = int(id)
+	cartItemResult := cartItem
+	return cartItemResult
 }
 
-func (repository *CartRepositoryImpl) GetCart(ctx context.Context, tx *sql.Tx) (cart []domain.Cart, err error) {
-	script := "select id, product_id, quantity from carts"
+func (repository *CartRepositoryImpl) GetCart(ctx context.Context, tx *sql.Tx) (cartItems []domain.CartItem, err error) {
+	script := "select cart_item_id, cart_id, product_id, quantity from cart_items"
 	rows, err := tx.QueryContext(ctx, script)
 	helper.PanicIfError(err)
 	defer rows.Close()
 
-	carts := []domain.Cart{}
+	cartItems = []domain.CartItem{}
 	for rows.Next() {
-		cart := domain.Cart{}
-		err := rows.Scan(&cart.Id, &cart.ProductId, &cart.Quantity)
+		cartItem := domain.CartItem{}
+		err := rows.Scan(&cartItem.CartItemId, &cartItem.CartId, &cartItem.ProductId, &cartItem.Quantity)
 		helper.PanicIfError(err)
-		carts = append(carts, cart)
+		cartItems = append(cartItems, cartItem)
 	}
-	return carts, err
+	return cartItems, err
 
 }
 
-func (repository *CartRepositoryImpl) UpdateCart(ctx context.Context, tx *sql.Tx, cart domain.Cart) {
-	if cart.ProductId != 0 && cart.Quantity == 0 {
-		script := "update carts set product_id=? where id=?"
-		_, err := tx.ExecContext(ctx, script, cart.ProductId, cart.Id)
+func (repository *CartRepositoryImpl) UpdateCart(ctx context.Context, tx *sql.Tx, cartItem domain.CartItem) {
+	if cartItem.ProductId != 0 && cartItem.Quantity == 0 {
+		script := "update cart_items set product_id=? where cart_item_id=?"
+		_, err := tx.ExecContext(ctx, script, cartItem.ProductId, cartItem.CartItemId)
 		helper.PanicIfError(err)
-	} else if cart.ProductId == 0 && cart.Quantity != 0 {
-		script := "update carts set quantity=? where id=?"
-		_, err := tx.ExecContext(ctx, script, cart.Quantity, cart.Id)
+	} else if cartItem.ProductId == 0 && cartItem.Quantity != 0 {
+		script := "update cart_items set quantity=? where cart_item_id=?"
+		_, err := tx.ExecContext(ctx, script, cartItem.Quantity, cartItem.CartItemId)
 		helper.PanicIfError(err)
 	} else {
-		script := "update carts set product_id=?,quantity=? where id=?"
-		_, err := tx.ExecContext(ctx, script, cart.ProductId, cart.Quantity, cart.Id)
+		script := "update cart_items set product_id=?,quantity=? where cart_item_id=?"
+		_, err := tx.ExecContext(ctx, script, cartItem.ProductId, cartItem.Quantity, cartItem.CartItemId)
 		helper.PanicIfError(err)
 	}
 }

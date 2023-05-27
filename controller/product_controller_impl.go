@@ -39,11 +39,11 @@ func (controller *CartControllerImpl) FindProductById(writer http.ResponseWriter
 
 }
 func (controller *CartControllerImpl) AddToCart(writer http.ResponseWriter, request *http.Request, param httprouter.Params) {
-	cartRequest := web.CartAddOrUpdateRequest{}
-	err := json.NewDecoder(request.Body).Decode(&cartRequest)
+	addRequest := web.CartAddRequest{}
+	err := json.NewDecoder(request.Body).Decode(&addRequest)
 	helper.PanicIfError(err)
 
-	cartResponse := controller.CartService.AddToCart(request.Context(), cartRequest)
+	cartResponse := controller.CartService.AddToCart(request.Context(), addRequest)
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
@@ -68,12 +68,12 @@ func (controller *CartControllerImpl) GetCart(writer http.ResponseWriter, reques
 }
 
 func (controller *CartControllerImpl) UpdateCart(writer http.ResponseWriter, request *http.Request, param httprouter.Params) {
-	Id := param.ByName("id")
+	Id := param.ByName("cartItemId")
 	id, err := strconv.Atoi(Id)
 	helper.PanicIfError(err)
 
 	cartRequest := web.CartUpdateRequest{
-		Id: id,
+		CartItemId: id,
 	}
 	err = json.NewDecoder(request.Body).Decode(&cartRequest)
 	helper.PanicIfError(err)

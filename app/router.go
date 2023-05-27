@@ -11,7 +11,7 @@ func NewRouter(controller controller.CartController) *httprouter.Router {
 	router.GET("/api/products/:productId", controller.FindProductById)
 	router.POST("/api/carts", controller.AddToCart)
 	router.GET("/api/carts", controller.GetCart)
-	router.PATCH("/api/carts/:id", controller.UpdateCart)
+	router.PATCH("/api/carts/:cartItemId", controller.UpdateCart)
 
 	return router
 }

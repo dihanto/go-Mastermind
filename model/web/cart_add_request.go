@@ -1,12 +1,14 @@
 package web
 
-type CartAddOrUpdateRequest struct {
+type CartAddRequest struct {
+	CartId    int `json:"cartId"`
 	ProductId int `json:"productId"`
 	Quantity  int `json:"quantity"`
 }
 
 type CartUpdateRequest struct {
-	Id        int `json:"id"`
-	ProductId int `json:"productId"`
-	Quantity  int `json:"quantity"`
+	CartItemId int `json:"cartItemId"`
+	CartId     int `json:"cartId"`
+	ProductId  int `json:"productId"`
+	Quantity   int `json:"quantity"`
 }

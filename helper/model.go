@@ -7,24 +7,24 @@ import (
 
 func ToProductResponse(product domain.Product) web.ProductResponse {
 	return web.ProductResponse{
-		Id:         product.Id,
+		Id:         product.ProductId,
 		Name:       product.Name,
 		Price:      product.Price,
-		Quantity:   product.Quantity,
 		CategoryId: product.CategoryId,
 	}
 }
 
-func ToCartResponse(cart domain.Cart) web.CartResponse {
+func ToCartResponse(cartItem domain.CartItem) web.CartResponse {
 	return web.CartResponse{
-		Id:        cart.Id,
-		ProductId: cart.ProductId,
-		Quantity:  cart.Quantity,
+		CartItemId: cartItem.CartItemId,
+		CartId:     cartItem.CartId,
+		ProductId:  cartItem.ProductId,
+		Quantity:   cartItem.Quantity,
 	}
 }
-func ToCartResponses(carts []domain.Cart) []web.CartResponse {
+func ToCartResponses(cartItems []domain.CartItem) []web.CartResponse {
 	var cartResponse []web.CartResponse
-	for _, cart := range carts {
+	for _, cart := range cartItems {
 		cartResponse = append(cartResponse, ToCartResponse(cart))
 	}
 	return cartResponse

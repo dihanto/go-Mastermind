@@ -1,10 +1,9 @@
 package domain
 
 type Product struct {
-	Id         int
+	ProductId  int
 	Name       string
 	Price      int
-	Quantity   int
 	CategoryId int
 }
 
@@ -14,7 +13,18 @@ type Category struct {
 }
 
 type Cart struct {
-	Id        int
-	ProductId int
-	Quantity  int
+	CartId int
+	UserId string
+}
+
+type CartItem struct {
+	CartItemId int
+	CartId     int
+	ProductId  int
+	Quantity   int
+}
+
+type User struct {
+	Id       string
+	Username string
 }
