@@ -63,18 +63,50 @@ func (repository *CartRepositoryImpl) GetCart(ctx context.Context, tx *sql.Tx) (
 
 }
 
-func (repository *CartRepositoryImpl) UpdateCart(ctx context.Context, tx *sql.Tx, cartItem domain.CartItem) {
+func (repository *CartRepositoryImpl) UpdateCart(ctx context.Context, tx *sql.Tx, cartItem domain.CartItem) (domain.CartItem, error) {
+	checkScript := "select count(*) from cart_items where cart_item_id=?"
+	var count int
+	err := tx.QueryRowContext(ctx, checkScript, cartItem.CartItemId).Scan(&count)
+	helper.PanicIfError(err)
+	if count == 0 {
+		return cartItem, errors.New("cart item not found")
+	}
+
 	if cartItem.ProductId != 0 && cartItem.Quantity == 0 {
 		script := "update cart_items set product_id=? where cart_item_id=?"
 		_, err := tx.ExecContext(ctx, script, cartItem.ProductId, cartItem.CartItemId)
 		helper.PanicIfError(err)
+
+		return cartItem, err
+
 	} else if cartItem.ProductId == 0 && cartItem.Quantity != 0 {
 		script := "update cart_items set quantity=? where cart_item_id=?"
 		_, err := tx.ExecContext(ctx, script, cartItem.Quantity, cartItem.CartItemId)
 		helper.PanicIfError(err)
+
+		return cartItem, err
+
 	} else {
 		script := "update cart_items set product_id=?,quantity=? where cart_item_id=?"
 		_, err := tx.ExecContext(ctx, script, cartItem.ProductId, cartItem.Quantity, cartItem.CartItemId)
 		helper.PanicIfError(err)
+
+		return cartItem, err
 	}
+}
+
+func (repository *CartRepositoryImpl) DeleteCart(ctx context.Context, tx *sql.Tx, cartItemId int) error {
+	checkScript := "select count(*) from cart_items where cart_item_id=?"
+	var count int
+	err := tx.QueryRowContext(ctx, checkScript, cartItemId).Scan(&count)
+	helper.PanicIfError(err)
+	if count == 0 {
+		return errors.New("cart item not found")
+	}
+
+	script := "delete from cart_items where cart_item_id =?"
+	_, err = tx.ExecContext(ctx, script, cartItemId)
+	helper.PanicIfError(err)
+
+	return err
 }

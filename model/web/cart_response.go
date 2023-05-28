@@ -6,3 +6,8 @@ type CartResponse struct {
 	ProductId  int `json:"productId"`
 	Quantity   int `json:"quantity"`
 }
+type CartUpdateResponse struct {
+	CartId    int `json:"cartId"`
+	ProductId int `json:"productId"`
+	Quantity  int `json:"quantity"`
+}

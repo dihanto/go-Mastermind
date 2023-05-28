@@ -11,5 +11,6 @@ type CartRepository interface {
 	FindProductById(ctx context.Context, tx *sql.Tx, productId int) (product domain.Product, err error)
 	AddToCart(ctx context.Context, tx *sql.Tx, cartItem domain.CartItem) domain.CartItem
 	GetCart(ctx context.Context, tx *sql.Tx) (cartItems []domain.CartItem, err error)
-	UpdateCart(ctx context.Context, tx *sql.Tx, cartItem domain.CartItem)
+	UpdateCart(ctx context.Context, tx *sql.Tx, cartItem domain.CartItem) (domain.CartItem, error)
+	DeleteCart(ctx context.Context, tx *sql.Tx, cartItemId int) error
 }

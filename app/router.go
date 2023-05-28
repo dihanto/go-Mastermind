@@ -12,6 +12,7 @@ func NewRouter(controller controller.CartController) *httprouter.Router {
 	router.POST("/api/carts", controller.AddToCart)
 	router.GET("/api/carts", controller.GetCart)
 	router.PATCH("/api/carts/:cartItemId", controller.UpdateCart)
+	router.DELETE("/api/carts/:cartItemId", controller.DeleteCart)
 
 	return router
 }

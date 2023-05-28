@@ -11,4 +11,5 @@ type CartController interface {
 	AddToCart(writer http.ResponseWriter, request *http.Request, param httprouter.Params)
 	GetCart(writer http.ResponseWriter, request *http.Request, param httprouter.Params)
 	UpdateCart(writer http.ResponseWriter, request *http.Request, param httprouter.Params)
+	DeleteCart(writer http.ResponseWriter, request *http.Request, param httprouter.Params)
 }

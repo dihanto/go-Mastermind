@@ -1,14 +1,14 @@
 package web
 
 type CartAddRequest struct {
-	CartId    int `json:"cartId"`
-	ProductId int `json:"productId"`
-	Quantity  int `json:"quantity"`
+	CartId    int `validate:"required,numeric" json:"cartId"`
+	ProductId int `validate:"required,numeric" json:"productId"`
+	Quantity  int `validate:"required,numeric" json:"quantity"`
 }
 
 type CartUpdateRequest struct {
-	CartItemId int `json:"cartItemId"`
-	CartId     int `json:"cartId"`
+	CartItemId int `validate:"required,numeric" json:"cartItemId"`
+	CartId     int `validate:"required,numeric" json:"cartId"`
 	ProductId  int `json:"productId"`
 	Quantity   int `json:"quantity"`
 }

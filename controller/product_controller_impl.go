@@ -78,15 +78,33 @@ func (controller *CartControllerImpl) UpdateCart(writer http.ResponseWriter, req
 	err = json.NewDecoder(request.Body).Decode(&cartRequest)
 	helper.PanicIfError(err)
 
-	controller.CartService.UpdateCart(request.Context(), cartRequest)
+	cartResponse := controller.CartService.UpdateCart(request.Context(), cartRequest)
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
-		Data:   "",
+		Data:   cartResponse,
 	}
 
 	writer.Header().Add("Content-Type", "application/json")
 	err = json.NewEncoder(writer).Encode(webResponse)
 	helper.PanicIfError(err)
 
+}
+
+func (controller *CartControllerImpl) DeleteCart(writer http.ResponseWriter, request *http.Request, param httprouter.Params) {
+	cartItemIdString := param.ByName("cartItemId")
+	cartItemId, err := strconv.Atoi(cartItemIdString)
+	helper.PanicIfError(err)
+
+	controller.CartService.DeleteCart(request.Context(), cartItemId)
+
+	webResponse := web.WebResponse{
+		Code:   200,
+		Status: "Deleted",
+		Data:   "",
+	}
+
+	writer.Header().Add("Content-Type", "application/json")
+	err = json.NewEncoder(writer).Encode(webResponse)
+	helper.PanicIfError(err)
 }

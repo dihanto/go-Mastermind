@@ -51,9 +51,7 @@
                                                 "price": {
                                                     "type": "number"
                                                 },
-                                                "quantity": {
-                                                    "type": "number"
-                                                },
+                                                
                                                 "categoryId": {
                                                     "type": "number"
                                                 }
@@ -80,6 +78,9 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
+                                    "cartId" :{
+                                        "type" : "number"
+                                    },
                                     "productId": {
                                         "type": "number"
                                     },
@@ -108,21 +109,19 @@
                                         "data": {
                                             "type": "object",
                                             "properties": {
-                                                "id": {
+                                                "cartItemId": {
                                                     "type": "number"
                                                 },
-                                                "name": {
-                                                    "type": "string"
+                                                "cartId" : {
+                                                    "type" : "number"
                                                 },
-                                                "price": {
+                                                "produuctId":{
                                                     "type": "number"
                                                 },
                                                 "quantity": {
                                                     "type": "number"
-                                                },
-                                                "categoryId": {
-                                                    "type": "number"
                                                 }
+                                                
                                             }
                                         }
                                     }
@@ -155,15 +154,19 @@
                                         "data": {
                                             "type": "object",
                                             "properties": {
-                                                "cartId": {
+                                                "cartItemId": {
                                                     "type": "number"
                                                 },
-                                                "productId": {
+                                                "cartId" : {
+                                                    "type" : "number"
+                                                },
+                                                "productId":{
                                                     "type": "number"
                                                 },
                                                 "quantity": {
                                                     "type": "number"
                                                 }
+                                                
                                             }
                                         }
                                     }
@@ -174,13 +177,20 @@
                 }
             }
         },
-        "/carts/product": {
+        "/carts/{cartItemId}": {
             "patch": {
                 "tags": [
                     "Carts API"
                 ],
                 "description": "Update Cart",
                 "summary": "Update Cart",
+                "parameters": [
+                    {
+                        "name": "cartItemId",
+                        "in": "path",
+                        "description": "Cart Item ID"
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -236,7 +246,43 @@
                     }
                 }
                             
-            }
+            },
+            "delete" :{
+                "tags": [
+                    "Carts API"
+                ],
+                "description": "Delete Cart",
+                "summary": "Delete Cart",
+                "parameters": [
+                    {
+                        "name" : "cartItemId",
+                        "in" : "path",
+                        "description": "Cart Item ID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success update Cart",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "number"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }   
         }
     }
 }
