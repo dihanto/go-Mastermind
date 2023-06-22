@@ -1,0 +1,10 @@
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    id_seller UUID,
+    name VARCHAR(100),
+    price integer,
+    created_at integer,
+    updated_at integer,
+    deleted_at integer,
+    FOREIGN KEY (id_seller) REFERENCES sellers(id)
+);

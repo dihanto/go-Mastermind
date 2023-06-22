@@ -1,1 +1,0 @@
-drop Table if EXISTS products;

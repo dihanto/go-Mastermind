@@ -1,31 +1,39 @@
 package helper
 
 import (
-	"github.com/dihanto/go-mastermind/model/domain"
-	"github.com/dihanto/go-mastermind/model/web"
+	"time"
+
+	"github.com/dihanto/go-mastermind/model/entity"
+	"github.com/dihanto/go-mastermind/model/web/response"
 )
 
-func ToProductResponse(product domain.Product) web.ProductResponse {
-	return web.ProductResponse{
-		Id:         product.ProductId,
-		Name:       product.Name,
-		Price:      product.Price,
-		CategoryId: product.CategoryId,
+func ToResponseCustomerRegister(customer entity.Customer) response.CustomerRegister {
+	return response.CustomerRegister{
+		Email:        customer.Email,
+		Name:         customer.Name,
+		RegisteredAt: time.Unix(int64(customer.RegisteredAt), 0),
 	}
 }
-
-func ToCartResponse(cartItem domain.CartItem) web.CartResponse {
-	return web.CartResponse{
-		CartItemId: cartItem.CartItemId,
-		CartId:     cartItem.CartId,
-		ProductId:  cartItem.ProductId,
-		Quantity:   cartItem.Quantity,
+func ToResponseCustomerUpdate(customer entity.Customer) response.CustomerUpdate {
+	return response.CustomerUpdate{
+		Email:        customer.Email,
+		Name:         customer.Name,
+		RegisteredAt: time.Unix(int64(customer.RegisteredAt), 0),
+		UpdatedAt:    time.Unix(int64(customer.UpdatedAt), 0),
 	}
 }
-func ToCartResponses(cartItems []domain.CartItem) []web.CartResponse {
-	var cartResponse []web.CartResponse
-	for _, cart := range cartItems {
-		cartResponse = append(cartResponse, ToCartResponse(cart))
+func ToResponseSellerRegister(seller entity.Seller) response.SellerRegister {
+	return response.SellerRegister{
+		Email:        seller.Email,
+		Name:         seller.Name,
+		RegisteredAt: time.Unix(int64(seller.RegisteredAt), 0),
 	}
-	return cartResponse
+}
+func ToResponseSellerUpdate(seller entity.Seller) response.SellerUpdate {
+	return response.SellerUpdate{
+		Email:        seller.Email,
+		Name:         seller.Name,
+		RegisteredAt: time.Unix(int64(seller.RegisteredAt), 0),
+		UpdatedAt:    time.Unix(int64(seller.UpdatedAt), 0),
+	}
 }
