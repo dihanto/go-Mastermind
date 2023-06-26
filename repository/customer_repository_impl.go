@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	"github.com/dihanto/go-mastermind/model/entity"
 	"github.com/google/uuid"
@@ -19,7 +18,6 @@ func NewCustomerRepositoryImpl() CustomerRepository {
 func (repository *CustomerRepositoryImpl) RegisterCustomer(ctx context.Context, tx *sql.Tx, request entity.Customer) (customer entity.Customer, err error) {
 
 	query := "INSERT INTO customers (id, email, name, password, registered_at) VALUES ($1, $2, $3, $4, $5);"
-
 	_, err = tx.ExecContext(ctx, query, request.Id, request.Email, request.Name, request.Password, request.RegisteredAt)
 	if err != nil {
 		return
@@ -30,20 +28,13 @@ func (repository *CustomerRepositoryImpl) RegisterCustomer(ctx context.Context, 
 		Password:     request.Password,
 		RegisteredAt: request.RegisteredAt,
 	}
-	log.Println(customer)
 	return customer, nil
 }
 
 func (repository *CustomerRepositoryImpl) LoginCustomer(ctx context.Context, tx *sql.Tx, email string) (id uuid.UUID, passwordHashed string, err error) {
-	query := "SELECT id, password FROM customers WHERE email=$1"
-	row, err := tx.QueryContext(ctx, query, email)
+	query := "SELECT id, password FROM customers WHERE email = $1"
+	err = tx.QueryRowContext(ctx, query, email).Scan(&id, &passwordHashed)
 	if err != nil {
-		return
-	}
-	defer row.Close()
-
-	if row.Next() {
-		err = row.Scan(&id, &passwordHashed)
 		if err != nil {
 			return
 		}

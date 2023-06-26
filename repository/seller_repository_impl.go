@@ -11,28 +11,32 @@ import (
 type SellerRepositoryImpl struct {
 }
 
+func NewSellerRepositoryImpl() SellerRepository {
+	return &SellerRepositoryImpl{}
+}
+
 func (repository *SellerRepositoryImpl) RegisterSeller(ctx context.Context, tx *sql.Tx, request entity.Seller) (seller entity.Seller, err error) {
 	query := "INSERT INTO sellers (id, email, name, password, registered_at) VALUES ($1, $2, $3, $4, $5)"
 	_, err = tx.ExecContext(ctx, query, request.Id, request.Email, request.Name, request.Password, request.RegisteredAt)
 	if err != nil {
 		return
 	}
+	seller = entity.Seller{
+		Email:        request.Email,
+		Name:         request.Name,
+		Password:     request.Password,
+		RegisteredAt: request.RegisteredAt,
+	}
 	return
 }
 
 func (repository *SellerRepositoryImpl) LoginSeller(ctx context.Context, tx *sql.Tx, email string) (id uuid.UUID, password string, err error) {
 	query := "SELECT id, password FROM sellers WHERE email=$1"
-	rows, err := tx.QueryContext(ctx, query, email)
+	err = tx.QueryRowContext(ctx, query, email).Scan(&id, &password)
 	if err != nil {
 		return
 	}
-	defer rows.Close()
-	if rows.Next() {
-		err = rows.Scan(&password)
-		if err != nil {
-			return
-		}
-	}
+
 	return
 }
 

@@ -71,7 +71,8 @@ func (usecase *CustomerUsecaseImpl) LoginCustomer(ctx context.Context, email str
 	if err != nil {
 		return
 	}
-	result, err = helper.CheckPasswordHash(password, passwordHashed)
+
+	result, err = helper.CheckPasswordHash(passwordHashed, password)
 
 	if !result {
 		return

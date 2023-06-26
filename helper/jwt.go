@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"log"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -12,7 +13,7 @@ const (
 	TokenDuration = time.Hour * 5
 )
 
-func GenerateJWTToken(id uuid.UUID) (string, error) {
+func GenerateCustomerJWTToken(id uuid.UUID) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["id"] = id
@@ -22,12 +23,30 @@ func GenerateJWTToken(id uuid.UUID) (string, error) {
 	return token.SignedString([]byte(JWTSecret))
 }
 
-func GenerateIdFromToken(tokenString string) (idString string, err error) {
+func GenerateSellerJWTToken(id uuid.UUID) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = id
+	claims["exp"] = time.Now().Add(TokenDuration).Unix()
+	claims["role"] = "seller"
+
+	return token.SignedString([]byte(JWTSecret))
+}
+func ParseJWTString(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return []byte("mastermind"), nil
 	})
 	if err != nil {
-		return
+		return nil, err
+	}
+	return token, nil
+
+}
+
+func GenerateIdFromToken(tokenString string) (idString string, err error) {
+	token, err := ParseJWTString(tokenString)
+	if err != nil {
+		log.Println(err)
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
@@ -37,5 +56,16 @@ func GenerateIdFromToken(tokenString string) (idString string, err error) {
 		return idString, nil
 	}
 
+	return
+}
+
+func GenerateRoleFromToken(token *jwt.Token) (role string, err error) {
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if role, ok = claims["role"].(string); !ok {
+			return
+		}
+		return role, nil
+	}
 	return
 }

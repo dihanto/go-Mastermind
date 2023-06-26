@@ -20,11 +20,16 @@ func main() {
 	var timeout int
 	router := httprouter.New()
 	router.PanicHandler = exception.ErrorHandler
-
-	repository := repository.NewCustomerRepositoryImpl()
-	usecase := usecase.NewCustomerUsecaseImpl(repository, db, validate, timeout)
-	controller.NewCustomerControllerImpl(usecase, router)
-
+	{
+		repository := repository.NewCustomerRepositoryImpl()
+		usecase := usecase.NewCustomerUsecaseImpl(repository, db, validate, timeout)
+		controller.NewCustomerControllerImpl(usecase, router)
+	}
+	{
+		repository := repository.NewSellerRepositoryImpl()
+		usecase := usecase.NewSellerUsecaseImpl(repository, db, validate, timeout)
+		controller.NewSellerControllerImpl(usecase, router)
+	}
 	server := http.Server{
 		Addr:    "localhost:2000",
 		Handler: router,

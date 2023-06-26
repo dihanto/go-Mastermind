@@ -17,8 +17,17 @@ import (
 type SellerUsecaseImpl struct {
 	Repository repository.SellerRepository
 	Db         *sql.DB
-	Validate   validator.Validate
+	Validate   *validator.Validate
 	Timeout    int
+}
+
+func NewSellerUsecaseImpl(repository repository.SellerRepository, db *sql.DB, validate *validator.Validate, timeout int) SellerUsecase {
+	return &SellerUsecaseImpl{
+		Repository: repository,
+		Db:         db,
+		Validate:   validate,
+		Timeout:    timeout,
+	}
 }
 
 func (usecase *SellerUsecaseImpl) RegisterSeller(ctx context.Context, request request.SellerRegister) (response response.SellerRegister, err error) {
@@ -26,7 +35,7 @@ func (usecase *SellerUsecaseImpl) RegisterSeller(ctx context.Context, request re
 	if err != nil {
 		return
 	}
-	helper.CommitOrRollback(tx)
+	defer helper.CommitOrRollback(tx)
 
 	password, err := helper.HashPassword(request.Password)
 	if err != nil {
@@ -34,6 +43,7 @@ func (usecase *SellerUsecaseImpl) RegisterSeller(ctx context.Context, request re
 	}
 
 	seller := entity.Seller{
+		Id:           uuid.New(),
 		Email:        request.Email,
 		Name:         request.Name,
 		Password:     password,
@@ -55,14 +65,14 @@ func (usecase *SellerUsecaseImpl) LoginSeller(ctx context.Context, request reque
 	if err != nil {
 		return
 	}
-	helper.CommitOrRollback(tx)
+	defer helper.CommitOrRollback(tx)
 
 	id, password, err := usecase.Repository.LoginSeller(ctx, tx, request.Email)
 	if err != nil {
 		return
 	}
 
-	result, err = helper.CheckPasswordHash(request.Password, password)
+	result, err = helper.CheckPasswordHash(password, request.Password)
 	if err != nil {
 		return
 	}
@@ -76,7 +86,7 @@ func (usecase *SellerUsecaseImpl) UpdateSeller(ctx context.Context, request requ
 	if err != nil {
 		return
 	}
-	helper.CommitOrRollback(tx)
+	defer helper.CommitOrRollback(tx)
 
 	seller := entity.Seller{
 		Name:      request.Name,
@@ -89,7 +99,7 @@ func (usecase *SellerUsecaseImpl) UpdateSeller(ctx context.Context, request requ
 		return
 	}
 
-	helper.ToResponseSellerUpdate(sellerResponse)
+	response = helper.ToResponseSellerUpdate(sellerResponse)
 
 	return
 }
@@ -99,7 +109,7 @@ func (usecase *SellerUsecaseImpl) DeleteSeller(ctx context.Context, request requ
 	if err != nil {
 		return
 	}
-	helper.CommitOrRollback(tx)
+	defer helper.CommitOrRollback(tx)
 
 	deleteTime := int32(time.Now().Unix())
 

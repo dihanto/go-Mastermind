@@ -29,10 +29,8 @@ func NewCustomerControllerImpl(usecase usecase.CustomerUsecase, route *httproute
 func (controller *CustomerControllerImpl) router(route *httprouter.Router) {
 	route.POST("/customer/register", controller.RegisterCustomer)
 	route.POST("/customer/login", controller.LoginCustomer)
-	updateCustomer := middleware.NewAuthMiddleware(controller.UpdateCustomer, []byte(helper.JWTSecret))
-	deleteCustomer := middleware.NewAuthMiddleware(controller.DeleteCustomer, []byte(helper.JWTSecret))
-	route.PUT("/customer", updateCustomer.ServeHTTP)
-	route.DELETE("/customer", deleteCustomer.ServeHTTP)
+	route.PUT("/customer", middleware.MindMiddleware(controller.UpdateCustomer))
+	route.DELETE("/customer", middleware.MindMiddleware(controller.DeleteCustomer))
 }
 
 func (controller *CustomerControllerImpl) RegisterCustomer(writer http.ResponseWriter, req *http.Request, param httprouter.Params) {
@@ -74,31 +72,32 @@ func (controller *CustomerControllerImpl) LoginCustomer(writer http.ResponseWrit
 	password := customer.Password
 
 	id, ok, err := controller.Usecase.LoginCustomer(req.Context(), email, password)
+	if !ok {
+		http.Error(writer, "Unathorized", http.StatusUnauthorized)
+		return
+	}
 	if err != nil {
 		http.Error(writer, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	if ok {
-		tokenString, err := helper.GenerateJWTToken(id)
-		if err != nil {
-			http.Error(writer, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-
-		webResponse := response.WebResponse{
-			Code:    http.StatusOK,
-			Message: "Login Success",
-			Data:    tokenString,
-		}
-
-		if err := json.NewEncoder(writer).Encode(webResponse); err != nil {
-			http.Error(writer, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-	} else {
-		http.Error(writer, "Invalid login credentials", http.StatusUnauthorized)
+	tokenString, err := helper.GenerateCustomerJWTToken(id)
+	if err != nil {
+		http.Error(writer, "Internal server error", http.StatusInternalServerError)
+		return
 	}
+
+	webResponse := response.WebResponse{
+		Code:    http.StatusOK,
+		Message: "Login Success",
+		Data:    tokenString,
+	}
+
+	if err := json.NewEncoder(writer).Encode(webResponse); err != nil {
+		http.Error(writer, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
 }
 
 func (controller *CustomerControllerImpl) UpdateCustomer(writer http.ResponseWriter, req *http.Request, param httprouter.Params) {
@@ -141,7 +140,7 @@ func (controller *CustomerControllerImpl) DeleteCustomer(writer http.ResponseWri
 	}
 	webResponse := response.WebResponse{
 		Code:    http.StatusOK,
-		Message: "customer successfully deleted",
+		Message: "Customer successfully deleted",
 	}
 
 	writer.Header().Add("Content-Type", "application/json")
