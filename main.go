@@ -30,6 +30,11 @@ func main() {
 		usecase := usecase.NewSellerUsecaseImpl(repository, db, validate, timeout)
 		controller.NewSellerControllerImpl(usecase, router)
 	}
+	{
+		repository := repository.NewProductRepositoryImpl()
+		usecase := usecase.NewProductUsecaseImpl(repository, db, validate, timeout)
+		controller.NewProductControllerImpl(usecase, router)
+	}
 	server := http.Server{
 		Addr:    "localhost:2000",
 		Handler: router,

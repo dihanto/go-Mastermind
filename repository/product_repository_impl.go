@@ -10,18 +10,21 @@ import (
 type ProductRepositoryImpl struct {
 }
 
+func NewProductRepositoryImpl() ProductRepository {
+	return &ProductRepositoryImpl{}
+}
+
 func (repository *ProductRepositoryImpl) AddProduct(ctx context.Context, tx *sql.Tx, request entity.Product) (product entity.Product, err error) {
-	query := "INSERT INTO products (id, id_seller, name, price, created_at) VALUES($1, $2, $3, $4, $5)"
-	_, err = tx.ExecContext(ctx, query, request.Id, request.IdSeller, request.Name, request.Price, request.CreatedAt)
-	if err != nil {
-		return
-	}
+	query := "INSERT INTO products (id_seller, name, price, quantity, created_at) VALUES($1, $2, $3, $4, $5) RETURNING id"
+	tx.QueryRowContext(ctx, query, request.IdSeller, request.Name, request.Price, request.Quantity, request.CreatedAt).Scan(&request.Id)
+
 	product = entity.Product{
 		Id:        request.Id,
 		IdSeller:  request.IdSeller,
 		Name:      request.Name,
 		Price:     request.Price,
 		CreatedAt: request.CreatedAt,
+		Quantity:  request.Quantity,
 	}
 	return
 }
@@ -36,7 +39,7 @@ func (repository *ProductRepositoryImpl) GetProduct(ctx context.Context, tx *sql
 
 	for rows.Next() {
 		var product entity.Product
-		err = rows.Scan(&product.Id, product.Name, product.Price)
+		err = rows.Scan(&product.Id, &product.Name, &product.Price)
 		if err != nil {
 			return
 		}
@@ -46,8 +49,8 @@ func (repository *ProductRepositoryImpl) GetProduct(ctx context.Context, tx *sql
 }
 
 func (repository *ProductRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, id int) (product entity.Product, err error) {
-	query := "Select id_seller, name, price, created_at, updated_at FROM products WHERE id=$1"
-	err = tx.QueryRowContext(ctx, query, id).Scan(&product.IdSeller, product.Name, product.Price, product.CreatedAt, product.UpdatedAt)
+	query := "Select id_seller, name, price, quantity, created_at, updated_at FROM products WHERE id=$1"
+	err = tx.QueryRowContext(ctx, query, id).Scan(&product.IdSeller, &product.Name, &product.Price, &product.Quantity, &product.CreatedAt, &product.UpdatedAt)
 	if err != nil {
 		return
 	}
@@ -58,13 +61,13 @@ func (repository *ProductRepositoryImpl) FindById(ctx context.Context, tx *sql.T
 }
 
 func (repository *ProductRepositoryImpl) UpdateProduct(ctx context.Context, tx *sql.Tx, request entity.Product) (product entity.Product, err error) {
-	query := "UPDATE products SET name=$1, price=$2 WHERE id=$3"
-	_, err = tx.ExecContext(ctx, query, request.Name, request.Price, request.Id)
+	query := "UPDATE products SET name=$1, price=$2, quantity=$3, updated_at=$4 WHERE id=$5"
+	_, err = tx.ExecContext(ctx, query, request.Name, request.Price, request.Quantity, request.UpdatedAt, request.Id)
 	if err != nil {
 		return
 	}
-	queryProduct := "SELECT name, price, created_at, updated_at FROM products WHERE id=$1"
-	err = tx.QueryRowContext(ctx, queryProduct, request.Id).Scan(&product.Name, &product.Price, &product.CreatedAt, &product.UpdatedAt)
+	queryProduct := "SELECT name, price, quantity, created_at, updated_at FROM products WHERE id=$1"
+	err = tx.QueryRowContext(ctx, queryProduct, request.Id).Scan(&product.Name, &product.Price, &product.Quantity, &product.CreatedAt, &product.UpdatedAt)
 	if err != nil {
 		return
 	}

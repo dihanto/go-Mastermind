@@ -34,7 +34,7 @@ func GenerateSellerJWTToken(id uuid.UUID) (string, error) {
 }
 func ParseJWTString(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-		return []byte("mastermind"), nil
+		return []byte(JWTSecret), nil
 	})
 	if err != nil {
 		return nil, err
@@ -43,20 +43,19 @@ func ParseJWTString(tokenString string) (*jwt.Token, error) {
 
 }
 
-func GenerateIdFromToken(tokenString string) (idString string, err error) {
+func GenerateIdFromToken(tokenString string) (id uuid.UUID, err error) {
 	token, err := ParseJWTString(tokenString)
 	if err != nil {
 		log.Println(err)
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		if idString, ok = claims["id"].(string); !ok {
-			return
+		if idString, ok := claims["id"].(string); ok {
+			id, _ = uuid.Parse(idString)
 		}
-		return idString, nil
 	}
 
-	return
+	return id, nil
 }
 
 func GenerateRoleFromToken(token *jwt.Token) (role string, err error) {

@@ -16,8 +16,17 @@ import (
 type ProductUsecaseImpl struct {
 	Repository repository.ProductRepository
 	Db         *sql.DB
-	Validate   validator.Validate
+	Validate   *validator.Validate
 	Timeout    int
+}
+
+func NewProductUsecaseImpl(repository repository.ProductRepository, db *sql.DB, validate *validator.Validate, timeout int) ProductUsecase {
+	return &ProductUsecaseImpl{
+		Repository: repository,
+		Db:         db,
+		Validate:   validate,
+		Timeout:    timeout,
+	}
 }
 
 func (usecase *ProductUsecaseImpl) AddProduct(ctx context.Context, request request.AddProduct) (product response.AddProduct, err error) {
@@ -28,10 +37,10 @@ func (usecase *ProductUsecaseImpl) AddProduct(ctx context.Context, request reque
 	defer helper.CommitOrRollback(tx)
 
 	requestRepo := entity.Product{
-		Id:        request.Id,
 		IdSeller:  request.IdSeller,
 		Name:      request.Name,
 		Price:     request.Price,
+		Quantity:  request.Quantity,
 		CreatedAt: int32(time.Now().Unix()),
 	}
 	response, err := usecase.Repository.AddProduct(ctx, tx, requestRepo)
@@ -92,6 +101,7 @@ func (usecase *ProductUsecaseImpl) UpdateProduct(ctx context.Context, request re
 		Id:        request.Id,
 		Name:      request.Name,
 		Price:     request.Price,
+		Quantity:  request.Quantity,
 		UpdatedAt: int32(time.Now().Unix()),
 	}
 

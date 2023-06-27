@@ -44,6 +44,7 @@ func ToResponseAddProduct(product entity.Product) response.AddProduct {
 		IdSeller:  product.IdSeller,
 		Name:      product.Name,
 		Price:     product.Price,
+		Quantity:  product.Quantity,
 		CreatedAt: time.Unix(int64(product.CreatedAt), 0),
 	}
 }
@@ -54,6 +55,7 @@ func ToResponseFindById(product entity.Product) response.FindById {
 		IdSeller:  product.IdSeller,
 		Name:      product.Name,
 		Price:     product.Price,
+		Quantity:  product.Quantity,
 		CreatedAt: time.Unix(int64(product.CreatedAt), 0),
 		UpdatedAt: time.Unix(int64(product.UpdatedAt), 0),
 	}
@@ -64,6 +66,7 @@ func ToResponseUpdateProduct(product entity.Product) response.UpdateProduct {
 		Id:        product.Id,
 		Name:      product.Name,
 		Price:     product.Price,
+		Quantity:  product.Quantity,
 		CreatedAt: time.Unix(int64(product.CreatedAt), 0),
 		UpdatedAt: time.Unix(int64(product.UpdatedAt), 0),
 	}

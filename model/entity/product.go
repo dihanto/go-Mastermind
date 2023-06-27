@@ -7,6 +7,7 @@ type Product struct {
 	IdSeller  uuid.UUID
 	Name      string
 	Price     int
+	Quantity  int
 	CreatedAt int32
 	UpdatedAt int32
 	DeletedAt int32

@@ -11,11 +11,29 @@ import (
 )
 
 func MindMiddleware(next httprouter.Handle) httprouter.Handle {
-	return func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	return func(writer http.ResponseWriter, request *http.Request, param httprouter.Params) {
 		logger := logrus.New()
 		logger.Infoln(request.Method)
 		logger.Infoln(request.RequestURI)
 
+		authHeader := request.Header.Get("Authorization")
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+		if tokenString == "" {
+			http.Error(writer, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		token, err := helper.ParseJWTString(tokenString)
+		if err != nil || !token.Valid {
+			http.Error(writer, "Unauthorized", http.StatusUnauthorized)
+		}
+
+		next(writer, request, param)
+	}
+}
+
+func ProductMiddleware(next httprouter.Handle) httprouter.Handle {
+	return func(writer http.ResponseWriter, request *http.Request, param httprouter.Params) {
 		authHeader := request.Header.Get("Authorization")
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		if tokenString == "" {
@@ -33,8 +51,13 @@ func MindMiddleware(next httprouter.Handle) httprouter.Handle {
 			log.Println(err)
 		}
 
-		log.Println(role)
+		if role != "seller" {
+			http.Error(writer, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
 
-		next(writer, request, params)
+		next(writer, request, param)
+
 	}
+
 }
