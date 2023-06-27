@@ -4,6 +4,6 @@ CREATE TABLE customers (
     name VARCHAR(100),
     password VARCHAR(100),
     registered_at integer,
-    updated_at integer,
+    updated_at integer not NULL DEFAULT 0,
     deleted_at integer
 );
